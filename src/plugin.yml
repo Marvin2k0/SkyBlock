@@ -1,0 +1,10 @@
+name: SkyBlock_by_Marvin2k0
+author: Marvin2k0
+version: 7.5.2020
+main: de.marvin2k0.skyblock.SkyBlock
+load: startup
+commands:
+  island:
+    description: Island command
+    permission: sky.is
+    aliases: [is]
