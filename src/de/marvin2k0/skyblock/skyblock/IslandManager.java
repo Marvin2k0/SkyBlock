@@ -12,7 +12,6 @@ import java.util.ArrayList;
 public class IslandManager
 {
     private static FileConfiguration config;
-    private static IslandManager manager;
     private static SkyBlock plugin;
     private static int amount;
 
@@ -67,12 +66,12 @@ public class IslandManager
 
     public boolean hasIsland(User user)
     {
-        return config.isSet(user.getName());
+        return config.isSet(user.getPlayer().getUniqueId().toString());
     }
 
     public static Island getIsland(User user)
     {
-        if (config.isSet(user.getName()))
+        if (config.isSet(user.getPlayer().getUniqueId().toString()))
             return new Island(user, Locations.get(user.getName() + ".spawn"));
 
         return null;

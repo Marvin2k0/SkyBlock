@@ -41,6 +41,6 @@ public class Island
 
     private void saveData()
     {
-        Locations.setLocation(owner.getName() + ".spawn", spawn);
+        Locations.setLocation(owner.getPlayer().getUniqueId() + ".spawn", spawn);
     }
 }

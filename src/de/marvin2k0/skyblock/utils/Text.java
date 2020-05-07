@@ -25,7 +25,7 @@ public class Text
         Text.config = plugin.getConfig();
 
         config.options().copyDefaults(true);
-        config.addDefault("prefix", "&7[&aSkyBlock&7]&f");
+        config.addDefault("prefix", "&7[&bSkyBlock&7]&f");
         config.addDefault("noplayer", "&7Only &cPlayers &7can execute this command!");
         config.addDefault("loading", "&7Loading...");
         config.addDefault("worldcreated", "&aSkyBlock world has been created!");

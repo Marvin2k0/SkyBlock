@@ -22,7 +22,7 @@ public class User
     public void teleportToIsland()
     {
         if (island != null)
-            player.teleport(island.getSpawn());
+            player.teleport(island.getSpawn().add(0, 1, 0));
     }
 
     public void setIsland(Island island)
