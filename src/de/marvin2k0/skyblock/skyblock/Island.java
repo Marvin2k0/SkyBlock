@@ -27,7 +27,7 @@ public class Island
     public Island(User owner, Location spawn)
     {
         this.owner = owner;
-        this.uuid = UUID.randomUUID();
+        this.uuid = sky.getConfig().getString(owner.getPlayer().getUniqueId() + ".island") == null ? UUID.randomUUID() : UUID.fromString(sky.getConfig().getString(owner.getPlayer().getUniqueId() + ".island"));
         this.spawn = spawn;
         saveData();
     }

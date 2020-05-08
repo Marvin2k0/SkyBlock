@@ -5,8 +5,12 @@ import de.marvin2k0.skyblock.User;
 import de.marvin2k0.skyblock.utils.Locations;
 import de.marvin2k0.skyblock.utils.Text;
 import org.bukkit.Location;
+import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 public class IslandManager
 {
@@ -30,8 +34,9 @@ public class IslandManager
         Island island = new Island(user);
         user.setIsland(island);
 
-        config.set(user.getPlayer().getUniqueId() + ".rank", amount);
-        config.set(user.getPlayer().getUniqueId() + ".points", 149);
+        config.set(island.getUUID() + ".rank", amount);
+        config.set(island.getUUID() + ".points", 149);
+        config.set(user.getPlayer().getUniqueId() + ".island", island.getUUID().toString());
         saveConfig();
 
         if (!islands.contains(island))

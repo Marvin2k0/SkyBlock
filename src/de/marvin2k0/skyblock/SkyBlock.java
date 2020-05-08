@@ -18,11 +18,14 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.util.ArrayList;
+
 public class SkyBlock extends JavaPlugin implements Listener
 {
     public static String WORLD_NAME = "skyblockworld";
     private static World skyblockWorld = null;
     public static SkyBlock plugin;
+    private ArrayList<Player> warning;
 
     private PluginDescriptionFile desc;
     private IslandManager is;
@@ -33,6 +36,7 @@ public class SkyBlock extends JavaPlugin implements Listener
         desc = getDescription();
         plugin = this;
         is = IslandManager.getManager();
+        warning = new ArrayList<>();
 
         createSkyblockWorld();
 
@@ -98,8 +102,10 @@ public class SkyBlock extends JavaPlugin implements Listener
 
             if (getConfig().isSet(offlinePlayer.getUniqueId().toString()))
             {
-                String rank = getConfig().getString(offlinePlayer.getUniqueId() + ".rank");
-                String points = getConfig().getString(offlinePlayer.getUniqueId() + ".points");
+                String island = getConfig().getString(offlinePlayer.getUniqueId() + ".island");
+                String rank = getConfig().getString(island + ".rank");
+                String points = getConfig().getString(island + ".points");
+
                 player.sendMessage(Text.get("islandinfo").replace("%player%", offlinePlayer.getName()).replace("%rank%", rank).replace("%points%", points));
             }
             else
@@ -134,11 +140,24 @@ public class SkyBlock extends JavaPlugin implements Listener
                 return true;
             }
 
-            player.sendMessage("You invited " + target.getName() + " to your island");
+            //TODO: island ränge sortieren
+            //TODO: invites
+            if (!warning.contains(player))
+            {
+                warning.add(player);
+                player.sendMessage(Text.get("invitewarning"));
+            }
+            else
+            {
+                warning.remove(player);
+                player.sendMessage("You invited " + target.getName() + " to your island");
+            }
+
             return true;
         }
 
-        return false;
+        player.sendMessage(Text.get("prefix") + " §cInvalid command!");
+        return true;
     }
 
     private void createSkyblockWorld()

@@ -7,6 +7,7 @@ import de.marvin2k0.skyblock.skyblock.IslandManager;
 import de.marvin2k0.skyblock.utils.Text;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
@@ -46,12 +47,14 @@ public class RankingListener implements Listener
 
         if (blockValues.containsKey(event.getBlock().getType()))
         {
-            int points = sky.getConfig().getInt(user.getPlayer().getUniqueId() + ".points");
+            int points = sky.getConfig().getInt(island.getUUID() + ".points");
+            System.out.println("points before " + points);
             int levelBefore = (points - (points % 1000)) / 1000 + 1;
             points += blockValues.get(event.getBlock().getType());
             int levelAfter = (points - (points % 1000)) / 1000 + 1;
-            sky.getConfig().set(user.getPlayer().getUniqueId() + ".points", points);
+            sky.getConfig().set(island.getUUID() + ".points", points);
             sky.saveConfig();
+            System.out.println("points after " + sky.getConfig().getInt(island.getUUID() + ".points"));
 
             if (levelAfter > levelBefore)
                 user.sendMessage(Text.get("levelup").replace("%level%", levelAfter + ""));
@@ -93,11 +96,11 @@ public class RankingListener implements Listener
 
         if (blockValues.containsKey(event.getBlock().getType()))
         {
-            int points = sky.getConfig().getInt(user.getPlayer().getUniqueId() + ".points");
+            int points = sky.getConfig().getInt(island.getUUID() + ".points");
             int levelBefore = (points - (points % 1000)) / 1000 + 1;
             points -= blockValues.get(event.getBlock().getType());
             int levelAfter = (points - (points % 1000)) / 1000 + 1;
-            sky.getConfig().set(user.getPlayer().getUniqueId() + ".points", points);
+            sky.getConfig().set(island.getUUID() + ".points", points);
             sky.saveConfig();
 
             if (levelAfter > levelBefore)
@@ -105,7 +108,6 @@ public class RankingListener implements Listener
             else if (levelAfter < levelBefore)
                 user.sendMessage(Text.get("leveldown").replace("%level%", levelAfter + ""));
         }
-
     }
 
     public static void initializeBlockValues()

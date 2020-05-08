@@ -38,6 +38,7 @@ public class Text
         config.addDefault("islandinfo", "&7%player%'s island is rank &a#%rank% (%points%)");
         config.addDefault("levelup", "&7Congratulations, your island is now level &a%level%");
         config.addDefault("leveldown", "&7Your island is now level &c%level%");
+        config.addDefault("invitewarning", "&4WARNING: &cThis player will have full access to your island if you do that! &7Invite them again to confirm!");
 
         saveConfig();
     }
