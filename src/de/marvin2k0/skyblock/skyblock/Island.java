@@ -17,21 +17,39 @@ public class Island
     private User owner;
     private UUID uuid;
 
+    public Island(User owner, Location spawn, UUID uuid)
+    {
+        this.owner = owner;
+        this.spawn = spawn;
+        this.uuid = uuid;
+    }
+
     public Island(User owner, Location spawn)
     {
         this.owner = owner;
         this.uuid = UUID.randomUUID();
-        this.spawn = spawn.add(0.5, 0, 0.5);
+        this.spawn = spawn;
         saveData();
-
-        spawn.subtract(0, 1, 0).getBlock().setType(Material.GOLD_BLOCK);
-
-        Locations.setLocation("nextlocation", Locations.get("nextlocation").add(10000, 0, 0));
     }
 
     public Island(User owner)
     {
-        this(owner, Locations.get("nextlocation"));
+        this(owner, Locations.get("nextlocation").add(0.5, 0, 0.5));
+
+        Locations.setLocation("nextlocation", Locations.get("nextlocation").add(10000, 0, 0));
+
+        for (int x = -2; x < 3; x++)
+        {
+            for (int y = -4; y < 0; y++)
+            {
+                for (int z = -2; z < 3; z++)
+                {
+                    spawn.getWorld().getBlockAt(spawn.getBlockX() + x, spawn.getBlockY() + y, spawn.getBlockZ() + z).setType(y == -1 ? Material.GRASS : Material.DIRT);
+                }
+            }
+        }
+
+        spawn.subtract(0, 1, 0).getBlock().setType(Material.GOLD_BLOCK);
     }
 
     public Location getSpawn()
@@ -39,8 +57,19 @@ public class Island
         return this.spawn;
     }
 
+    public UUID getUUID()
+    {
+        return this.uuid;
+    }
+
     private void saveData()
     {
         Locations.setLocation(owner.getPlayer().getUniqueId() + ".spawn", spawn);
+    }
+
+    @Override
+    public String toString()
+    {
+        return owner.getName() + "'s island";
     }
 }

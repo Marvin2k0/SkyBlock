@@ -1,10 +1,12 @@
 package de.marvin2k0.skyblock;
 
 import de.marvin2k0.skyblock.skyblock.IslandManager;
+import de.marvin2k0.skyblock.skyblock.listeners.RankingListener;
 import de.marvin2k0.skyblock.skyblock.world.SkyWorldGenerator;
 import de.marvin2k0.skyblock.utils.Locations;
 import de.marvin2k0.skyblock.utils.Text;
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
 import org.bukkit.WorldCreator;
 import org.bukkit.command.Command;
@@ -28,18 +30,20 @@ public class SkyBlock extends JavaPlugin implements Listener
     @Override
     public void onEnable()
     {
+        desc = getDescription();
+        plugin = this;
+        is = IslandManager.getManager();
+
         createSkyblockWorld();
 
         Text.setUp(this);
         Locations.setUp(this);
         IslandManager.setUp(this);
-
-        desc = getDescription();
-        plugin = this;
-        is = IslandManager.getManager();
+        RankingListener.initializeBlockValues();
 
         getCommand("island").setExecutor(this);
         getServer().getPluginManager().registerEvents(this, this);
+        getServer().getPluginManager().registerEvents(new RankingListener(), this);
     }
 
     @Override
@@ -59,26 +63,7 @@ public class SkyBlock extends JavaPlugin implements Listener
             return true;
         }
 
-        if (args[0].equals("world") && player.hasPermission("sky.is.admin"))
-        {
-            if (Bukkit.getWorld(WORLD_NAME) == null)
-            {
-                player.sendMessage(Text.get("loading"));
-                createSkyblockWorld();
-
-                player.sendMessage(Text.get("worldcreated"));
-                player.teleport(skyblockWorld.getSpawnLocation());
-            }
-            else
-            {
-                player.teleport(skyblockWorld.getSpawnLocation());
-                player.sendMessage(Text.get("welcome"));
-            }
-
-            return true;
-        }
-
-        else if (args[0].equalsIgnoreCase("create"))
+        if (args[0].equalsIgnoreCase("create"))
         {
             User user = User.getUser(player);
 
@@ -89,9 +74,67 @@ public class SkyBlock extends JavaPlugin implements Listener
             }
             else
             {
-                user.sendMessage("du hast schon eine insel!");
+                user.sendMessage(Text.get("alreadyownsisland"));
             }
 
+            return true;
+        }
+
+        if (args[0].equalsIgnoreCase("island"))
+        {
+            if (args.length < 2)
+            {
+                player.sendMessage("§cUsage: /" + label + " island <player>");
+                return true;
+            }
+
+            OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(args[1]);
+
+            if (!offlinePlayer.hasPlayedBefore())
+            {
+                player.sendMessage(Text.get("playernotfound"));
+                return true;
+            }
+
+            if (getConfig().isSet(offlinePlayer.getUniqueId().toString()))
+            {
+                String rank = getConfig().getString(offlinePlayer.getUniqueId() + ".rank");
+                String points = getConfig().getString(offlinePlayer.getUniqueId() + ".points");
+                player.sendMessage(Text.get("islandinfo").replace("%player%", offlinePlayer.getName()).replace("%rank%", rank).replace("%points%", points));
+            }
+            else
+            {
+                player.sendMessage(Text.get("playerhasnoisland"));
+            }
+
+            return true;
+        }
+
+        else if (args[0].equalsIgnoreCase("invite"))
+        {
+            if (args.length < 2)
+            {
+                player.sendMessage("§cUsage: /" + label + " <invite> <player>");
+                return true;
+            }
+
+            User user = User.getUser(player);
+
+            if (!IslandManager.getManager().hasIsland(user))
+            {
+                user.sendMessage(Text.get("noisland"));
+                return true;
+            }
+
+            Player target = null;
+
+            if ((target = Bukkit.getPlayer(args[1])) == null || target.getName().equals(player.getName()))
+            {
+                user.sendMessage(Text.get("notonline"));
+                return true;
+            }
+
+            player.sendMessage("You invited " + target.getName() + " to your island");
             return true;
         }
 
@@ -105,11 +148,11 @@ public class SkyBlock extends JavaPlugin implements Listener
             WorldCreator worldCreator = new WorldCreator(WORLD_NAME);
             worldCreator.generateStructures(false);
             worldCreator.generator(new SkyWorldGenerator());
-            Bukkit.createWorld(worldCreator);
+            Bukkit.getServer().createWorld(worldCreator);
         }
 
         skyblockWorld = Bukkit.getWorld(WORLD_NAME);
-        skyblockWorld.setSpawnLocation(0, 75, 0);
+        skyblockWorld.setAutoSave(true);
     }
 
     public static World getWorld()
