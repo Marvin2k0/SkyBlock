@@ -8,19 +8,23 @@ import de.marvin2k0.skyblock.utils.Text;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 
-import java.util.ArrayList;
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
 public class RankingListener implements Listener
 {
     private static HashMap<Material, Integer> blockValues = new HashMap<>();
-    private SkyBlock sky = SkyBlock.plugin;
+    private static SkyBlock sky = SkyBlock.plugin;
+
+    private static File file = new File(sky.getDataFolder().getPath() + "values.yml");
+    private static FileConfiguration blockValuesConfig = YamlConfiguration.loadConfiguration(file);
 
     @EventHandler
     public void onBlockPlace(BlockPlaceEvent event)
@@ -122,18 +126,6 @@ public class RankingListener implements Listener
         }
     }
 
-    public static void initializeBlockValues()
-    {
-        blockValues.put(Material.GRASS, 1);
-        blockValues.put(Material.DIRT, 1);
-        blockValues.put(Material.STONE, 2);
-        blockValues.put(Material.WOOD, 5);
-        blockValues.put(Material.IRON_BLOCK, 30);
-        blockValues.put(Material.GOLD_BLOCK, 50);
-        blockValues.put(Material.DIAMOND_BLOCK, 100);
-        blockValues.put(Material.EMERALD_BLOCK, 150);
-    }
-
     private void sort()
     {
         HashMap<String, Integer> islands = new HashMap<>();
@@ -206,5 +198,25 @@ public class RankingListener implements Listener
         }
 
         sky.saveConfig();
+    }
+
+    public static void initializeBlockValues()
+    {
+        blockValues.put(Material.GRASS, 1);
+        blockValues.put(Material.DIRT, 1);
+        blockValues.put(Material.STONE, 2);
+        blockValues.put(Material.WOOD, 5);
+        blockValues.put(Material.IRON_BLOCK, 30);
+        blockValues.put(Material.GOLD_BLOCK, 50);
+        blockValues.put(Material.DIAMOND_BLOCK, 100);
+        blockValues.put(Material.EMERALD_BLOCK, 150);
+
+
+        Map<String, Object> section = sky.getConfig().getConfigurationSection("blocks").getValues(false);
+
+        for (Map.Entry<String, Object> entry : section.entrySet())
+        {
+            blockValues.put(Material.getMaterial(entry.getKey()), Integer.valueOf(entry.getValue().toString()));
+        }
     }
 }

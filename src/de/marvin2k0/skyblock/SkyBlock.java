@@ -140,7 +140,6 @@ public class SkyBlock extends JavaPlugin implements Listener
                 return true;
             }
 
-            //TODO: island ränge sortieren
             //TODO: invites
             if (!warning.contains(player))
             {
