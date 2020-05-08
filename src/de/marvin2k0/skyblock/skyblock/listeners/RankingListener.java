@@ -13,7 +13,9 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 public class RankingListener implements Listener
 {
@@ -48,18 +50,22 @@ public class RankingListener implements Listener
         if (blockValues.containsKey(event.getBlock().getType()))
         {
             int points = sky.getConfig().getInt(island.getUUID() + ".points");
-            System.out.println("points before " + points);
             int levelBefore = (points - (points % 1000)) / 1000 + 1;
             points += blockValues.get(event.getBlock().getType());
             int levelAfter = (points - (points % 1000)) / 1000 + 1;
             sky.getConfig().set(island.getUUID() + ".points", points);
             sky.saveConfig();
-            System.out.println("points after " + sky.getConfig().getInt(island.getUUID() + ".points"));
 
             if (levelAfter > levelBefore)
+            {
                 user.sendMessage(Text.get("levelup").replace("%level%", levelAfter + ""));
+                sort();
+            }
             else if (levelAfter < levelBefore)
+            {
                 user.sendMessage(Text.get("leveldown").replace("%level%", levelAfter + ""));
+                sort();
+            }
         }
     }
 
@@ -104,9 +110,15 @@ public class RankingListener implements Listener
             sky.saveConfig();
 
             if (levelAfter > levelBefore)
+            {
                 user.sendMessage(Text.get("levelup").replace("%level%", levelAfter + ""));
+                sort();
+            }
             else if (levelAfter < levelBefore)
+            {
                 user.sendMessage(Text.get("leveldown").replace("%level%", levelAfter + ""));
+                sort();
+            }
         }
     }
 
@@ -120,5 +132,79 @@ public class RankingListener implements Listener
         blockValues.put(Material.GOLD_BLOCK, 50);
         blockValues.put(Material.DIAMOND_BLOCK, 100);
         blockValues.put(Material.EMERALD_BLOCK, 150);
+    }
+
+    private void sort()
+    {
+        HashMap<String, Integer> islands = new HashMap<>();
+        HashMap<Integer, String> islandPoints = new HashMap<>();
+        Map<String, Object> section = sky.getConfig().getConfigurationSection("").getValues(false);
+
+        for (Map.Entry<String, Object> entry : section.entrySet())
+        {
+            if (sky.getConfig().isSet(entry.getKey() + ".rank"))
+            {
+                islands.put(entry.getKey(), sky.getConfig().getInt(entry.getKey() + ".rank"));
+                islandPoints.put(sky.getConfig().getInt(entry.getKey() + ".points"), entry.getKey());
+            }
+        }
+
+        int nextHigh = -99, nextLow = -99;
+        int last = -99;
+        int lastIndex = -99;
+
+        String[] sorted = new String[islands.size() * 2 + 2];
+
+        for (Map.Entry<String, Integer> entry : islands.entrySet())
+        {
+            if (last == -99)
+            {
+                sorted[sorted.length / 2 - 1] = entry.getKey();
+                lastIndex = sorted.length / 2 - 1;
+            }
+            else
+            {
+                int now = sky.getConfig().getInt(entry.getKey() + ".points");
+
+                if (now <= last)
+                {
+                    sorted[nextLow] = entry.getKey();
+                    lastIndex = nextLow;
+                }
+                else
+                {
+                    sorted[nextHigh] = entry.getKey();
+                    lastIndex = nextHigh;
+                }
+            }
+
+            last = sky.getConfig().getInt(entry.getKey() + ".points");
+            nextHigh = sorted.length - lastIndex / 2 - 1;
+            nextLow = lastIndex / 2 - 1;
+
+            System.out.println(last + " at index " + lastIndex);
+        }
+
+        String[] fSorted = new String[islands.size()];
+        int index = 0;
+
+        for (int i = sorted.length - 1; i >= 0; i--)
+        {
+            if (sorted[i] != null)
+            {
+                System.out.println(sorted[i]);
+                fSorted[index] = sorted[i];
+                index++;
+            }
+        }
+
+        for (int i = 0; i < fSorted.length; i++)
+        {
+            int rank = i + 1;
+            System.out.println(fSorted[i] + " ist platz " + rank);
+            sky.getConfig().set(fSorted[i] + ".rank", rank);
+        }
+
+        sky.saveConfig();
     }
 }
