@@ -39,6 +39,12 @@ public class Text
         config.addDefault("levelup", "&7Congratulations, your island is now level &a%level%");
         config.addDefault("leveldown", "&7Your island is now level &c%level%");
         config.addDefault("invitewarning", "&4WARNING: &cThis player will have full access to your island if you do that! &7Invite them again to confirm!");
+        config.addDefault("sentinvite", "&7You have sent an invite to &a%player%");
+        config.addDefault("receivedinvite", "&7You have received an invite from &a%player% &4WARNING: &cif you accept you'll lose your island! Type 'CONFIRM' to confirm");
+        config.addDefault("inviteconfirm", "&7You are now part of the island of %player%");
+        config.addDefault("invitetime", "&7Invitation was not accepted");
+        config.addDefault("maxminions", 2);
+        config.addDefault("minionsreached", "&7You can't create another minion!");
 
         saveConfig();
     }

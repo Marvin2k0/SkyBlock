@@ -22,6 +22,7 @@ public class Island
         this.owner = owner;
         this.spawn = spawn;
         this.uuid = uuid;
+        saveData();
     }
 
     public Island(User owner, Location spawn)

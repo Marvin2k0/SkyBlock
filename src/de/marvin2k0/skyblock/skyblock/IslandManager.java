@@ -8,10 +8,13 @@ import org.bukkit.Location;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.UUID;
+
 public class IslandManager
 {
     private static FileConfiguration config;
@@ -19,6 +22,14 @@ public class IslandManager
     private static int amount;
 
     public static ArrayList<Island> islands = new ArrayList<>();
+
+    public void invite(User user, User target)
+    {
+        Island island = new Island(target, Locations.get(user.getPlayer().getUniqueId() + ".spawn"), UUID.fromString(config.getString(user.getPlayer().getUniqueId() + ".island")));
+
+        config.set(target.getPlayer().getUniqueId() + ".island", island.getUUID().toString());
+        saveConfig();
+    }
 
     public Island createNewIsland(User user)
     {
@@ -35,7 +46,7 @@ public class IslandManager
         user.setIsland(island);
 
         config.set(island.getUUID() + ".rank", amount);
-        config.set(island.getUUID() + ".points", 149);
+        config.set(island.getUUID() + ".points", 249);
         config.set(user.getPlayer().getUniqueId() + ".island", island.getUUID().toString());
         saveConfig();
 

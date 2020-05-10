@@ -7,3 +7,6 @@ commands:
     description: Island command
     permission: sky.is
     aliases: [is]
+  minion:
+    permission: minions.cmd
+    aliases: [m]

@@ -7,14 +7,11 @@ import de.marvin2k0.skyblock.skyblock.IslandManager;
 import de.marvin2k0.skyblock.utils.Text;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 
-import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -22,9 +19,6 @@ public class RankingListener implements Listener
 {
     private static HashMap<Material, Integer> blockValues = new HashMap<>();
     private static SkyBlock sky = SkyBlock.plugin;
-
-    private static File file = new File(sky.getDataFolder().getPath() + "values.yml");
-    private static FileConfiguration blockValuesConfig = YamlConfiguration.loadConfiguration(file);
 
     @EventHandler
     public void onBlockPlace(BlockPlaceEvent event)

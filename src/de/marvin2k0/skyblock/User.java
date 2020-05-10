@@ -2,6 +2,7 @@ package de.marvin2k0.skyblock;
 
 import de.marvin2k0.skyblock.skyblock.Island;
 import de.marvin2k0.skyblock.skyblock.IslandManager;
+import de.marvin2k0.skyblock.utils.Locations;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
@@ -22,8 +23,10 @@ public class User
 
     public void teleportToIsland()
     {
-        if (island != null && player.isOnline())
-            ((Player) player).teleport(island.getSpawn().add(0, 1, 0));
+        if (player.isOnline())
+        {
+            ((Player) player).teleport(Locations.get(player.getUniqueId() + ".spawn"));
+        }
     }
 
     public void setIsland(Island island)

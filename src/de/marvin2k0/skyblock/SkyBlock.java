@@ -1,31 +1,40 @@
 package de.marvin2k0.skyblock;
 
+import de.marvin2k0.skyblock.minions.MinionsCommand;
 import de.marvin2k0.skyblock.skyblock.IslandManager;
 import de.marvin2k0.skyblock.skyblock.listeners.RankingListener;
 import de.marvin2k0.skyblock.skyblock.world.SkyWorldGenerator;
+import de.marvin2k0.skyblock.utils.CountdownTimer;
 import de.marvin2k0.skyblock.utils.Locations;
 import de.marvin2k0.skyblock.utils.Text;
-import org.bukkit.Bukkit;
-import org.bukkit.OfflinePlayer;
-import org.bukkit.World;
-import org.bukkit.WorldCreator;
+import org.bukkit.*;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class SkyBlock extends JavaPlugin implements Listener
 {
     public static String WORLD_NAME = "skyblockworld";
     private static World skyblockWorld = null;
     public static SkyBlock plugin;
+    private HashMap<User, User> invites;
     private ArrayList<Player> warning;
+
+    private File file;
+    private FileConfiguration config;
 
     private PluginDescriptionFile desc;
     private IslandManager is;
@@ -37,6 +46,10 @@ public class SkyBlock extends JavaPlugin implements Listener
         plugin = this;
         is = IslandManager.getManager();
         warning = new ArrayList<>();
+        invites = new HashMap<>();
+
+        file = new File(getDataFolder().getPath() + "/minions.yml");
+        config = YamlConfiguration.loadConfiguration(file);
 
         createSkyblockWorld();
 
@@ -46,8 +59,13 @@ public class SkyBlock extends JavaPlugin implements Listener
         RankingListener.initializeBlockValues();
 
         getCommand("island").setExecutor(this);
+        getCommand("minion").setExecutor(new MinionsCommand());
+
         getServer().getPluginManager().registerEvents(this, this);
         getServer().getPluginManager().registerEvents(new RankingListener(), this);
+        getServer().getPluginManager().registerEvents(new MinionsCommand(), this);
+
+        initMinions();
     }
 
     @Override
@@ -84,7 +102,7 @@ public class SkyBlock extends JavaPlugin implements Listener
             return true;
         }
 
-        if (args[0].equalsIgnoreCase("island"))
+        if (args[0].equalsIgnoreCase("island") || args[0].equalsIgnoreCase("info"))
         {
             if (args.length < 2)
             {
@@ -140,7 +158,6 @@ public class SkyBlock extends JavaPlugin implements Listener
                 return true;
             }
 
-            //TODO: invites
             if (!warning.contains(player))
             {
                 warning.add(player);
@@ -149,9 +166,38 @@ public class SkyBlock extends JavaPlugin implements Listener
             else
             {
                 warning.remove(player);
-                player.sendMessage("You invited " + target.getName() + " to your island");
+
+                invites.put(User.getUser(target), user);
+                player.sendMessage(Text.get("sentinvite").replace("%player%", target.getName()));
+                target.sendMessage(Text.get("receivedinvite").replace("%player%", player.getName()));
+
+                new CountdownTimer(this, 30,
+                        () -> {},
+                        () -> player.sendMessage(Text.get("invitetime")),
+                        (time) -> {}
+                ).scheduleTimer();
             }
 
+            return true;
+        }
+
+        else if (args[0].equalsIgnoreCase("home"))
+        {
+            User user = null;
+
+            if ((user = User.getUser(player)) == null)
+            {
+                System.out.println("null");
+                return true;
+            }
+
+            if (!is.hasIsland(user))
+            {
+                user.sendMessage(Text.get("noisland"));
+                return true;
+            }
+
+            user.teleportToIsland();
             return true;
         }
 
@@ -183,5 +229,53 @@ public class SkyBlock extends JavaPlugin implements Listener
     {
         User user = User.getUser(event.getPlayer());
         System.out.println(is.hasIsland(user));
+    }
+
+    @EventHandler
+    public void onInvite(AsyncPlayerChatEvent event)
+    {
+        User target = User.getUser(event.getPlayer());
+
+        if (invites.containsKey(target) && event.getMessage().equals("CONFIRM"))
+        {
+            event.setCancelled(true);
+            is.invite(invites.get(target), target);
+            target.sendMessage(Text.get("inviteconfirm").replace("%player%", invites.get(target).getName()));
+            invites.remove(target);
+        }
+    }
+
+    private void initMinions()
+    {
+        for (Map.Entry<String, Object> player : config.getConfigurationSection("").getValues(false).entrySet())
+        {
+            for (Map.Entry<String, Object> location : config.getConfigurationSection(player.getKey()).getValues(false).entrySet())
+            {
+                if (!config.isSet(player.getKey() + "." + location.getKey() + ".world"))
+                    continue;
+
+                World world = Bukkit.getWorld(config.getString(player.getKey() + "." + location.getKey() + ".world"));
+                double y = config.getDouble(player.getKey() + "." + location.getKey() + ".y");
+                double x = config.getDouble(player.getKey() + "." + location.getKey() + ".x");
+                double z = config.getDouble(player.getKey() + "." + location.getKey() + ".z");
+                double yaw = config.getDouble(player.getKey() + "." + location.getKey() + ".yaw");
+                double pitch = config.getDouble(player.getKey() + "." + location.getKey() + ".pitch");
+
+                Location locationObj = new Location(world, x, y, z, (float) yaw, (float) pitch);
+
+                System.out.println(locationObj);
+
+                int scheduler = Bukkit.getScheduler().scheduleSyncRepeatingTask(SkyBlock.plugin, new Runnable()
+                {
+                    @Override
+                    public void run()
+                    {
+                        MinionsCommand.miningProcess(locationObj);
+                    }
+                }, 0, 20 * 1);
+
+                MinionsCommand.minions.put(locationObj, scheduler);
+            }
+        }
     }
 }
