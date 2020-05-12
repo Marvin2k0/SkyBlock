@@ -419,8 +419,6 @@ public class MinionsCommand implements CommandExecutor, Listener
         int level = (points - (points % 1000)) / 1000 + 1;
         int seconds = 60;
 
-        System.out.println(islandUUID + " " + points + " " + level);
-
         if (level <= 5)
         {
             seconds = 100 / level;

@@ -1,6 +1,7 @@
 package de.marvin2k0.skyblock;
 
 import de.marvin2k0.skyblock.blockstacks.Blockstack;
+import de.marvin2k0.skyblock.enchblocks.EnchantedBlocks;
 import de.marvin2k0.skyblock.minions.MinionsCommand;
 import de.marvin2k0.skyblock.skyblock.IslandManager;
 import de.marvin2k0.skyblock.skyblock.listeners.RankingListener;
@@ -58,6 +59,7 @@ public class SkyBlock extends JavaPlugin implements Listener
         Locations.setUp(this);
         IslandManager.setUp(this);
         RankingListener.initializeBlockValues();
+        EnchantedBlocks.addRecipies(this);
 
         getCommand("island").setExecutor(this);
         getCommand("minion").setExecutor(new MinionsCommand());
@@ -68,6 +70,7 @@ public class SkyBlock extends JavaPlugin implements Listener
         getServer().getPluginManager().registerEvents(new RankingListener(), this);
         getServer().getPluginManager().registerEvents(new MinionsCommand(), this);
         getServer().getPluginManager().registerEvents(new Blockstack(), this);
+        getServer().getPluginManager().registerEvents(new EnchantedBlocks(), this);
 
         initMinions();
     }
@@ -191,7 +194,6 @@ public class SkyBlock extends JavaPlugin implements Listener
 
             if ((user = User.getUser(player)) == null)
             {
-                System.out.println("null");
                 return true;
             }
 
@@ -232,7 +234,6 @@ public class SkyBlock extends JavaPlugin implements Listener
     public void onJoin(PlayerJoinEvent event)
     {
         User user = User.getUser(event.getPlayer());
-        System.out.println(is.hasIsland(user));
     }
 
     @EventHandler

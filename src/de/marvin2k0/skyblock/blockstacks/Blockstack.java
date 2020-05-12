@@ -25,7 +25,6 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -100,8 +99,6 @@ public class Blockstack implements CommandExecutor, Listener
 
             Material mat = null;
 
-            System.out.println(event.getBlock().getType());
-
             if (config.getInt(player.getUniqueId() + "." + uuid + ".amount") == 0)
             {
                 config.set(player.getUniqueId() + "." + uuid + ".type", event.getBlock().getType().toString());
@@ -115,7 +112,6 @@ public class Blockstack implements CommandExecutor, Listener
                 int amount = config.getInt(player.getUniqueId() + "." + uuid + ".amount");
                 String name = Text.get("stackertitle", false).replace("%amount%", amount + "").replace("%material%", mat.toString());
 
-                System.out.println(name);
                 stacker.getBlock().setType(mat);
 
                 armorstand.setCustomName(name);
@@ -126,7 +122,6 @@ public class Blockstack implements CommandExecutor, Listener
 
                 if (event.getBlock().getType() == mat)
                 {
-                    System.out.println("gleicher blck");
                     event.getBlock().setType(Material.AIR);
 
                     int amount = config.getInt(player.getUniqueId() + "." + uuid + ".amount");
@@ -135,8 +130,6 @@ public class Blockstack implements CommandExecutor, Listener
                     saveConfig();
 
                     String name = Text.get("stackertitle", false).replace("%amount%", amount + "").replace("%material%", mat.toString());
-
-                    System.out.println(name);
 
                     armorstand.setCustomName(name);
                 }
@@ -333,8 +326,6 @@ public class Blockstack implements CommandExecutor, Listener
         int amount = RankingListener.blockValues.get(item.getType()) * (item.getAmount());
         int points = SkyBlock.plugin.getConfig().getInt(islandUUID + ".points");
 
-        System.out.println(points + " - " + amount);
-
         SkyBlock.plugin.getConfig().set(islandUUID + ".points", (points + amount));
         SkyBlock.plugin.saveConfig();
 
@@ -353,8 +344,6 @@ public class Blockstack implements CommandExecutor, Listener
 
         int amount = RankingListener.blockValues.get(item.getType()) * (item.getAmount() - 1);
         int points = SkyBlock.plugin.getConfig().getInt(islandUUID + ".points");
-
-        System.out.println(points + " - " + amount);
 
         SkyBlock.plugin.getConfig().set(islandUUID + ".points", (points - amount - 10));
         SkyBlock.plugin.saveConfig();
@@ -420,7 +409,6 @@ public class Blockstack implements CommandExecutor, Listener
     {
         UUID uuid = UUID.randomUUID();
 
-        //TODO:
         config.set(player.getUniqueId() + "." + uuid + ".type", material.toString());
         config.set(player.getUniqueId() + "." + uuid + ".amount", amount);
         config.set(player.getUniqueId() + "." + uuid + ".world", location.getWorld().getName());

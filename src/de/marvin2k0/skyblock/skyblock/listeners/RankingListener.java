@@ -5,6 +5,7 @@ import de.marvin2k0.skyblock.User;
 import de.marvin2k0.skyblock.skyblock.Island;
 import de.marvin2k0.skyblock.skyblock.IslandManager;
 import de.marvin2k0.skyblock.utils.Text;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
@@ -167,8 +168,6 @@ public class RankingListener implements Listener
             last = sky.getConfig().getInt(entry.getKey() + ".points");
             nextHigh = sorted.length - lastIndex / 2 - 1;
             nextLow = lastIndex / 2 - 1;
-
-            System.out.println(last + " at index " + lastIndex);
         }
 
         String[] fSorted = new String[islands.size()];
@@ -178,7 +177,6 @@ public class RankingListener implements Listener
         {
             if (sorted[i] != null)
             {
-                System.out.println(sorted[i]);
                 fSorted[index] = sorted[i];
                 index++;
             }
@@ -187,7 +185,6 @@ public class RankingListener implements Listener
         for (int i = 0; i < fSorted.length; i++)
         {
             int rank = i + 1;
-            System.out.println(fSorted[i] + " ist platz " + rank);
             sky.getConfig().set(fSorted[i] + ".rank", rank);
         }
 
@@ -205,6 +202,16 @@ public class RankingListener implements Listener
         blockValues.put(Material.DIAMOND_BLOCK, 100);
         blockValues.put(Material.EMERALD_BLOCK, 150);
 
+
+        if (!sky.getConfig().isSet("blocks"))
+        {
+            Bukkit.getConsoleSender().sendMessage(" ");
+            Bukkit.getConsoleSender().sendMessage(" ");
+            Bukkit.getConsoleSender().sendMessage(Text.get("prefix") + " §4PLEASE ADD BLOCK-VALUES TO THE CONFIG!!!!!");
+            Bukkit.getConsoleSender().sendMessage(" ");
+            Bukkit.getConsoleSender().sendMessage(" ");
+            return;
+        }
 
         Map<String, Object> section = sky.getConfig().getConfigurationSection("blocks").getValues(false);
 
