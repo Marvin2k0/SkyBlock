@@ -65,6 +65,8 @@ public class Island
         chest.getInventory().addItem(new ItemStack(Material.LAVA_BUCKET, 1));
         chest.getInventory().addItem(new ItemStack(Material.PORK, 32));
         chest.getInventory().addItem(new ItemStack(Material.BUCKET, 1));
+        chest.getInventory().addItem(new ItemStack(Material.DIRT, 10));
+        chest.getInventory().addItem(new ItemStack(Material.SAPLING, 1));
         chestLocation.subtract(2, 0, 2);
 
         chest.getWorld().generateTree(spawn.add(-2, 0, -2), TreeType.TREE);
