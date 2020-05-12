@@ -10,3 +10,8 @@ commands:
   minion:
     permission: minions.cmd
     aliases: [m]
+  setlimit:
+    permission: minions.admin
+  blockstacker:
+    permission: stacker.get
+    aliases: stacker

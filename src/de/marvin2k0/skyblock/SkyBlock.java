@@ -1,5 +1,6 @@
 package de.marvin2k0.skyblock;
 
+import de.marvin2k0.skyblock.blockstacks.Blockstack;
 import de.marvin2k0.skyblock.minions.MinionsCommand;
 import de.marvin2k0.skyblock.skyblock.IslandManager;
 import de.marvin2k0.skyblock.skyblock.listeners.RankingListener;
@@ -60,10 +61,13 @@ public class SkyBlock extends JavaPlugin implements Listener
 
         getCommand("island").setExecutor(this);
         getCommand("minion").setExecutor(new MinionsCommand());
+        getCommand("setlimit").setExecutor(new MinionsCommand());
+        getCommand("blockstacker").setExecutor(new Blockstack());
 
         getServer().getPluginManager().registerEvents(this, this);
         getServer().getPluginManager().registerEvents(new RankingListener(), this);
         getServer().getPluginManager().registerEvents(new MinionsCommand(), this);
+        getServer().getPluginManager().registerEvents(new Blockstack(), this);
 
         initMinions();
     }
@@ -263,16 +267,14 @@ public class SkyBlock extends JavaPlugin implements Listener
 
                 Location locationObj = new Location(world, x, y, z, (float) yaw, (float) pitch);
 
-                System.out.println(locationObj);
-
                 int scheduler = Bukkit.getScheduler().scheduleSyncRepeatingTask(SkyBlock.plugin, new Runnable()
                 {
                     @Override
                     public void run()
                     {
-                        MinionsCommand.miningProcess(locationObj);
+                        MinionsCommand.miningProcess(player.getKey(), location.getKey(), locationObj);
                     }
-                }, 0, 20 * 1);
+                }, 20 * MinionsCommand.getSeconds(Bukkit.getOfflinePlayer(player.getKey()), player.getKey(), false), 20 * MinionsCommand.getSeconds(Bukkit.getOfflinePlayer(player.getKey()), player.getKey(), false));
 
                 MinionsCommand.minions.put(locationObj, scheduler);
             }

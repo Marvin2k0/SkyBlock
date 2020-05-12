@@ -44,7 +44,12 @@ public class Text
         config.addDefault("inviteconfirm", "&7You are now part of the island of %player%");
         config.addDefault("invitetime", "&7Invitation was not accepted");
         config.addDefault("maxminions", 2);
-        config.addDefault("minionsreached", "&7You can't create another minion!");
+        config.addDefault("minionsreached", "&7You can't create another minion on this island!");
+        config.addDefault("mininginfo", "&7Your minon mines every &b%seconds% &7seconds. Improve your island level to mine faster. Your island level is &b%level%");
+        config.addDefault("inventoryfull", "&7You &cinventory is full&7!");
+        config.addDefault("skull", "&aReceived block-stacker");
+        config.addDefault("blockstackerradius", 5);
+        config.addDefault("stackertitle", "&e%amount%x &b%material%");
 
         saveConfig();
     }

@@ -17,7 +17,7 @@ import java.util.Map;
 
 public class RankingListener implements Listener
 {
-    private static HashMap<Material, Integer> blockValues = new HashMap<>();
+    public static HashMap<Material, Integer> blockValues = new HashMap<>();
     private static SkyBlock sky = SkyBlock.plugin;
 
     @EventHandler

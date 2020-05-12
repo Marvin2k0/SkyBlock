@@ -47,6 +47,7 @@ public class IslandManager
 
         config.set(island.getUUID() + ".rank", amount);
         config.set(island.getUUID() + ".points", 249);
+        config.set(island.getUUID() + ".maxminions", 1);
         config.set(user.getPlayer().getUniqueId() + ".island", island.getUUID().toString());
         saveConfig();
 
